@@ -1,24 +1,27 @@
-import { readFileSync } from "fs";
+import db from '@/db';
+import { readFileSync } from 'fs';
+import Link from 'next/link';
 
 export default function Page() {
-  const data = JSON.parse(
-    readFileSync("src/data.json", { encoding: "utf-8" })
-  ) as {
-    items: Record<
-      string,
-      { id: string; name: string; type: "default" | "box" }
-    >;
-  };
-  const items = Object.values(data.items);
+  const items = db.getItems();
 
-  return (
+  const renderItems = items.length ? (
     <div>
-      <h1>Предметы:</h1>
       <ul>
         {items.map(({ id, name }) => (
           <li key={id}>{name}</li>
         ))}
       </ul>
+    </div>
+  ) : (
+    <div>Нет предметов</div>
+  );
+
+  return (
+    <div>
+      <Link href={'/items/add'}>Добавить предмет</Link>
+      <h1>Предметы:</h1>
+      {renderItems}
     </div>
   );
 }
